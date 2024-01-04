@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description"
+          content="General Flow as Foundation Affordance for Robot Manipulation Learning">
+    <meta name="keywords" content="Affordance, Robotic Manipulation, Flow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>General-Flow</title>
+
+    <style>
+      .video-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2列布局 */
+        gap: 10px;
+        align-items: start; /* 对齐到网格顶部 */
+      }
+      .video-three-row {
+        display: flex;
+        justify-content: space-around; /* 均匀分布视频并保持间距 */
+        align-items: center; /* 垂直居中 */
+      }
+      .video-row {
+        display: flex;
+      }
+
+      .video {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* 使得占位符和标题居中对齐 */
+      }
+
+      .video-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* 中心对齐 */
+      }
+
+      .video-placeholder {
+        width: 100%;
+        height: 322px; /* 调整为实际视频的高度，以保持布局一致 */
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .video-icon {
+        font-size: 50px;
+        color: #cccccc;
+      }
+
+      #demo-video-1 {
+        width: 100%; /* 与占位符宽度相同 */
+        display: none; /* 默认不显示，直到通过JS切换 */
+      }
+
+      .video-caption {
+        text-align: center;
+        margin-top: 5px;
+        font-size: 24px;
+        color: #333;
+        width: 100%;
+        order: 1; /* 确保标题始终在视频/占位符下方 */
+      }
+
+      .image-container {
+        display: flex; /* Activates Flexbox layout */
+        justify-content: center; /* Horizontally centers the content */
+        align-items: center; /* Vertically centers the content */
+        flex-wrap: wrap; /* Allows items to wrap as needed */
+      }
+      .image {
+        flex: 1; /* Allows each image to grow and fill the space */
+        margin: 10px; /* Adds some space around each image */
+      }
+      .image img {
+          width: 100%; /* Makes the image fill the container */
+          height: auto; /* Maintains the aspect ratio of the image */
+      }
+
+      .list-container {
+        display: flex;
+        justify-content: center;
+      }
+
+      .list-container ul {
+        text-align: left; /* Left-aligns the text in the list */
+        padding: 0; /* Optional: Removes default padding */
+      }
+
+      .list-container li {
+        list-style-type: disc; /* Optional: Ensures bullet points are shown */
+      }
+
+
+
+    </style>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FV4ZJ9PVSV"></script>  
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-FV4ZJ9PVSV');
+    </script>
+
+    <script>
+
+      function updateDemoActions() {
+        var objectSelect = document.getElementById('demo-object');
+        var actionSelect = document.getElementById('demo-action');
+        var actions = {
+            'Refrigerator': ['open(grasp)', 'open(pull)', 'close'],
+            'Drawer': ['open(grasp)', 'open(pull)', 'close'],
+            'ToyCar': ['push', 'pickup', 'putdown'],
+            'Laptop': ['open', 'close'],
+            'Mug': ['pickup', 'putdown'],
+            'GoldSafe': ['open', 'close'],
+            'BrownSafe': ['open', 'close'],
+            'Clothes': ['fold']
+        };
+        var selectedObject = objectSelect.value;
+        actionSelect.innerHTML = '';
+        if (actions[selectedObject]) {
+          actions[selectedObject].forEach(function(action, index) {
+              var option = document.createElement('option');
+              option.value = action;
+              option.text = action;
+              actionSelect.appendChild(option);
+              if (index === 0) {
+                  actionSelect.value = action;
+              }
+          });
+        }
+        checkAllSelected()
+      }
+
+      function updateVisActions() {
+        var objectSelect = document.getElementById('vis-object');
+        var actionSelect = document.getElementById('vis-action');
+        var actions = {
+            'Refrigerator': ['open(grasp)', 'open(pull)', 'close'],
+            'Drawer': ['open(grasp)', 'open(pull)', 'close'],
+            'ToyCar': ['push', 'pickup', 'putdown'],
+            'Laptop': ['open', 'close'],
+            'Mug': ['pickup', 'putdown'],
+            'GoldSafe': ['open', 'close'],
+            'BrownSafe': ['open', 'close'],
+            'Clothes': ['fold']
+        };
+        var selectedObject = objectSelect.value;
+        actionSelect.innerHTML = '';
+        if (actions[selectedObject]) {
+          actions[selectedObject].forEach(function(action, index) {
+              var option = document.createElement('option');
+              option.value = action;
+              option.text = action;
+              actionSelect.appendChild(option);
+              if (index === 0) {
+                  actionSelect.value = action;
+              }
+          });
+        }
+        checkAllSelected_Vis()
+      }
+
+      function checkAllSelected() {
+        var objectSelected = document.getElementById('demo-object').value;
+        var actionSelected = document.getElementById('demo-action').value;
+        if (objectSelected && actionSelected) {
+            playVideoBasedOnSelection(objectSelected, actionSelected);
+        }
+      }
+      function checkAllSelected_Vis() {
+        var objectSelected = document.getElementById('vis-object').value;
+        var actionSelected = document.getElementById('vis-action').value;
+        if (objectSelected && actionSelected) {
+            DisplayImageBasedOnSelection(objectSelected, actionSelected);
+        }
+      }
+
+      function playVideoBasedOnSelection(object, action) {
+        var obj_ = object
+        if (object=='GoldSafe' || object=='BrownSafe') obj_ = 'Safe';
+        else if (object=='Drawer' || object=='Refrigerator') obj_ = 'StorageFurniture';
+        var videoSource_human = 'media/human_video/' + obj_ + '.mp4';
+        var videoElement_human = document.getElementById('demo-video-1');
+        videoElement_human.src = videoSource_human;
+        videoElement_human.play();
+
+        var videoSource_1 = 'media/demos/' + object + '_' + action + '_1.mp4';
+        var videoElement_1 = document.getElementById('demo-video-2');
+        videoElement_1.src = videoSource_1;
+        videoElement_1.play();
+        var videoSource_2 = 'media/demos/' + object + '_' + action + '_2.mp4';
+        var videoElement_2 = document.getElementById('demo-video-3');
+        videoElement_2.src = videoSource_2;
+        videoElement_2.play();
+        var videoSource_3 = 'media/demos/' + object + '_' + action + '_3.mp4';
+        var videoElement_3 = document.getElementById('demo-video-4');
+        videoElement_3.src = videoSource_3;
+        videoElement_3.play();
+      }
+
+      function DisplayImageBasedOnSelection(object, action) {
+        var imageSource_1 = 'media/figures/robot_vis_general_flow/' + object + '_' + action + '_scene.png';
+        document.getElementById("vis-image-1").src = imageSource_1;
+        var imageSource_2 = 'media/figures/robot_vis_general_flow/' + object + '_' + action + '_robot.png';
+        document.getElementById("vis-image-2").src = imageSource_2;
+      }
+
+      function updateHOIVisualization() {
+        var group = document.getElementById("hoi-group-select").value;
+        var imagePath = "media/figures/hoi_vis_group/hoi_vis_group_" + group + '.png'; 
+        document.getElementById("visualization-image").src = imagePath;
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        updateDemoActions();
+        updateHOIVisualization();
+        updateVisActions();
+      });
+
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('toggle-human-video').addEventListener('click', function() {
+          var videoElement = document.getElementById('demo-video-1');
+          var placeholderElement = document.querySelector('#human-video-container .video-placeholder');
+          if (videoElement.style.display === 'none' || videoElement.style.display === '') {
+            videoElement.style.display = 'block';
+            placeholderElement.style.display = 'none';
+          } else {
+            videoElement.style.display = 'none';
+            placeholderElement.style.display = 'flex';
+          }
+        });
+      });
+    </script>
+
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+  </head>
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-fullhd">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">General Flow as Foundation Affordance for Robot<br>Manipulation Learning</h1>
+            <!-- <h3 class="title is-4 conference-authors"><a target="_blank" href="https://roboticsconference.org/">RSS2024 (Submitted)</a></h3> -->
+            <!-- <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a target="_blank" href="https://www.google.com/">anonymous submmision</a><sup>1</sup>,
+              </span>
+            </div> -->
+
+            <!-- <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>Tsinghua University,</span>
+            </div> -->
+
+            <!-- PDF Link. -->
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <!-- <span class="link-block">
+                  <a target="_blank" href="voxposer.pdf"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper</span>
+                  </a>
+                </span> -->
+
+                <!-- Arxiv Link. -->
+                <!-- <span class="link-block">
+                  <a target="_blank" href="https://arxiv.org/abs/2307.05973"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                        <i class="fas fa-file"></i>
+                    </span>
+                    <span>ArXiv</span>
+                  </a>
+                </span> -->
+
+                <!-- Video Link. -->
+                <span class="link-block">
+                  <a target="_blank" href="www.google.com"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                        <i class="fab fa-youtube"></i>
+                    </span>
+                    <span>Video</span>
+                  </a>
+                </span>
+
+                <!-- Code Link. -->
+                <span class="link-block">
+                  <a target="_blank" href="www.google.com"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                        <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code (Coming Soon)</span>
+                    </a>
+                </span>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero teaser">
+    <div class="container is-fullhd">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-vcentered  is-centered">
+            <video id="teaser" autoplay muted loop height="60%" width="60%">
+              <source src="media/videos/teaser.mp4"
+                      type="video/mp4">
+            </video>
+            </br>
+          </div>
+          <br>
+          <!-- <h2 class="subtitle has-text-centered">
+            <span class="dperact">VoxPoser</span> extracts <b>affordances</b> and <b>constraints</b> from large language models and vision-language models<br>to compose 3D value maps, which are used by motion planners to <b>zero-shot synthesize</b> trajectories for everyday manipulation tasks.
+          </h2> -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="hero is-light is-small">
+    <div class="hero-body">
+      <div class="container">
+        <div id="results-carousel" class="carousel results-carousel">
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Mug_putdown_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Refrigerator_open(grasp)_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Clothes_fold_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Drawer_open(grasp)_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/BrownSafe_open_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/ToyCar_push_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Refrigerator_close_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/ToyCar_pickup_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/GoldSafe_close_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>           
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Laptop_close_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>       
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/BrownSafe_close_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>  
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Mug_pickup_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Refrigerator_open(pull)_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>       
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Drawer_close_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>       
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/GoldSafe_open_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/ToyCar_putdown_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>      
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Drawer_open(pull)_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+          <div class="item">
+            <video poster="" autoplay muted loop height="100%">
+              <source src="media/demos/Laptop_open_1.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <h2 class="subtitle has-text-centered">
+  </br>
+    General Flow is a foundation affordace which satiesfies<br><i>refined, scene & embodiment-agnostic, semantic & geometric-rich, language-conditioned and scalable in the real world.</i> <br>With general flow as affordance, we achieve <b>zero-shot human-to-robot skill transfer</b> with 81% success rate on totally 18 tasks.  
+  </h2>
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+            We propose general flow as universal affordance for scalable robot manipulation learning in the real world. While previous representation is either embodiment/simulation-dependent or lack fine-grained geometric and semantic to provide details guidance, general flow provide foundation ability and property even to achieve zero-shot human-to-robot skill transfer. In this paper, we define general flow formally, and extract it from both real world 3D human datasets and original RGBD video. New algorithm is design to enhance scale-awareness for general flow prediction, and multiple key properties (e.g. robustness to label noise, common sense acquisition) emergent with training in scale. In addition, with a close-loop controller and a simple heuristic policy derived from general flow prediction, we adopt our methods on a Franka-Emika robot and achieved zero-shot skill transfer with 81\% success rate for all categories of object with totally 18 tasks. All of these shows great potentiality of general flow prediction as foundation affordance for robot learning in the future. We will release our tool, code and weight to benefit the subsequent research.
+            </p>
+          </div>
+        </div>
+      </div>
+      <!--/ Abstract. -->
+
+    </div>
+
+    <!-- Paper video. -->
+    <!-- <br>
+    <br>
+
+    <div class="container is-max-widescreen">
+
+      <div class="rows">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/Yvn4eR05A3M"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div> -->
+
+  </section>
+
+  <section class="section">
+    <div class="container is-max-widescreen">
+
+      <div class="rows">
+
+
+      <!-- Animation. -->
+      <div class="rows is-centered ">
+        <div class="row is-full-width">
+          <h2 class="title is-3"><span class="dperact">General Flow</span></h2>
+
+          <!-- Interpolating. -->
+          <div class="content has-text-justified">
+          <!-- <br> -->
+          </div>
+          <img src="media/figures/1_introduction_00_org.png" class="interpolation-image" />
+          </br>
+          </br>
+            <p class="content has-text-justified">
+              We extend previous work to propose general flow as foundation affordance. Property and downstream application are analysis to reveal its foundational status. We extract general flow label directly from human RGBD video datasets and design new algorithm for general flow prediction. Zero-shot cross-embodiment skill transfer is achieved in the real world. All of these show the great power and potentiality of general flow  affordance.
+            </p>
+            
+          </br>
+          </br>
+
+          <!--/ Re-rendering. -->
+
+          <h2 class="title is-3">Zero-Shot Real World Execution</h2>
+
+          <h3 class="subtitle has-text-centered">
+            </br>
+              For all 18 tasks, we provide 4 human videos example and 3 demos of robot trials. 
+            </br>
+              We keep <b>gripper position, grasp manner, initial state, scene setting and policy behaviour</b> as diverse as possible.
+            </br>
+              Please check out our paper for detailed method and deployment setting. 
+            </h3>
+                      
+
+          <div class="columns">
+            <div class="column has-text-centered">
+              Video Demo for   
+              <div class="select is-small is-rounded">     
+                <select id="demo-object" onchange="updateDemoActions()">
+                <option value="Refrigerator" selected="selected">"Refrigerator (Storage Furniture)"</option>
+                <option value="ToyCar">"Toy Car"</option>
+                <option value="Laptop">"Laptop"</option>
+                <option value="Drawer">"Drawer (Storage Furniture)"</option>
+                <option value="Clothes">"Clothes"</option>
+                <option value="GoldSafe">"Safe (Gold)"</option>
+                <option value="Mug">"Mug"</option>
+                <option value="BrownSafe">"Safe (Brown)"</option>
+                </select>
+              </div>  
+              with "
+              <div class="select is-small is-rounded">
+                <select id="demo-action" onchange="checkAllSelected();">
+                    <!-- Action options will be dynamically added here -->
+                </select>
+              </div>" action. 
+              <button id="toggle-human-video">Display / Hide Human Video</button>
+            </div>
+          </div>
+
+          <div class="video-grid">
+            <!-- <div class="video" id="human-video">
+                <video id="demo-video-1" width="100%" height="100%" controls autoplay loop muted>
+                    <source src="media/demos/Refrigerator_open(grasp)_1.mp4" type="video/mp4">
+                </video>
+                <p class="video-caption">Some Videos from Human Datasets</p>
+            </div> -->
+            <div class="video-container" id="human-video-container">
+              <div class="video-placeholder">
+                  <i class="fas fa-eye-slash video-icon"></i> <!-- 隐藏图标 -->
+              </div>
+              <video id="demo-video-1" width="100%" height="auto" controls autoplay loop muted style="display: none;">
+                  <source src="media/human_video/StorageFurniture.mp4" type="video/mp4">
+              </video>
+              <p class="video-caption">Video Examples from Human Datasets</p>
+            </div>
+            <div class="video">
+                <video id="demo-video-2" width="100%" height="100%" controls autoplay loop muted>
+                    <source src="media/demos/Refrigerator_open(grasp)_1.mp4" type="video/mp4">
+                </video>
+                <p class="video-caption">Real World Trial-1</p>
+            </div>
+            <div class="video">
+                <video id="demo-video-3" width="100%" height="100%" controls autoplay loop muted>
+                  <source src="media/demos/Refrigerator_open(grasp)_2.mp4" type="video/mp4">
+                </video>
+                <p class="video-caption">Real World Trial-2</p>
+            </div>
+            <div class="video">
+                <video id="demo-video-4" width="100%" height="100%" controls autoplay loop muted>
+                  <source src="media/demos/Refrigerator_open(grasp)_3.mp4" type="video/mp4">
+                </video>
+                <p class="video-caption">Real World Trial-3</p>
+            </div>
+          </div>
+
+          </br>
+          </br>
+          </br>
+
+          <h2 class="title is-3">Zero-Shot General Flow Prediction</h2>
+          <h3 class="subtitle has-text-centered">
+            We provide visualiaztion for general flow prediction during zero-shot execution. 
+            </br>
+            25 trajectories are selected for clearity.
+            </br>
+            General Flow prediction <b> is robustness to embodiment-transfer and segmentation error</b> to some extend. 
+          </h3>
+          <div class="columns">
+            <div class="column has-text-centered">
+              Visualization for   
+              <div class="select is-small is-rounded">     
+                <select id="vis-object" onchange="updateVisActions()">
+                <option value="Refrigerator" selected="selected">"Refrigerator (Storage Furniture)"</option>
+                <option value="ToyCar">"Toy Car"</option>
+                <option value="Laptop">"Laptop"</option>
+                <option value="Drawer">"Drawer (Storage Furniture)"</option>
+                <option value="Clothes">"Clothes"</option>
+                <option value="GoldSafe">"Safe (Gold)"</option>
+                <option value="Mug">"Mug"</option>
+                <option value="BrownSafe">"Safe (Brown)"</option>
+                </select>
+              </div>  
+              with "
+              <div class="select is-small is-rounded">
+                <select id="vis-action" onchange="checkAllSelected_Vis();">
+                    <!-- Action options will be dynamically added here -->
+                </select>
+              </div>" action. 
+            </div>
+          </div>
+          <div class="image-container">
+            <div class="image">
+                <img id="vis-image-1" src="media/figures/robot_vis_general_flow/Refrigerator_open(grasp)_scene.png" alt="Description of First Image">
+                <p class="video-caption">Scene Reference</p>
+            </div>
+            <div class="image">
+                <img id="vis-image-2" src="media/figures/robot_vis_general_flow/Refrigerator_open(grasp)_robot.png" alt="Description of Second Image">
+                <p class="image-caption"></p>
+                <p class="video-caption">General Flow Prediction</p>
+            </div>
+          </div>
+
+          </br>
+          </br>
+          </br>
+
+          <h2 class="title is-3">More Visualization from Human Video</h2>
+
+          <h3 class="subtitle has-text-centered">
+            We provide more visualiaztion of prediction on human videos. 25 or 50 trajectories are selected for clearity.
+          </h3>
+          <div class="columns">
+            <div class="column has-text-centered">
+              select  
+              <div class="select is-small is-rounded">     
+                <select id="hoi-group-select" onchange="updateHOIVisualization()">
+                  <option value="1" selected="selected">"group-1"</option>
+                  <option value="2">"group-2"</option>
+                  <option value="3">"group-3"</option>
+                  <option value="4">"group-4"</option>
+                </select>
+              </div> of visualization.
+            </div>
+          </div>
+          <div>
+            <img id="visualization-image" src="media/figures/hoi_vis_group/hoi_vis_group_1.png" alt="Visualization">
+          </div>
+
+          </br>
+          </br>
+          </br>
+
+          <h2 class="title is-3">Emergent Properties of General Flow</h2>
+          <h3 class="subtitle has-text-centered">
+            With general flow prediction task <b>trained in scale</b>, our model acquire multiple emergent properties, which is impossible for small-scale imitation learning setting. 
+            </br>
+            </br>
+            <div class="list-container">
+              <ul>
+                  <li><b>Semantic Rich & Controllable [(a)(b)]:</b> semantic of flow could be changed easily by switching language instruction. </li>
+                  </br>
+                  <li><b>Robust to the Label Noise [(c)(d)]:</b> even with severe noise in label (significant deviation in 'open Safe' and almost static in 'pickup Toy Car'), our model could predict right trend. (red indicates label and green indicates prediction in the figure.)</li> 
+                  </br>
+                  <li><b>Spatial Commonsense Acquisition [(e)(f)]:</b> the model adjust its prediction scale to fit for object spatial relationship (both end on the table, and larger scale for longer distance). </li>
+              </ul>
+            </div>
+          </h3>
+          <div>
+            <img src="media/figures/3_pred_quality_analysis_00.png" alt="Visualization" style="transform: scale(0.9);">
+          </div>
+
+        </br>
+        <h2 class="title is-3">Failure Case</h2>
+          <div class="video-three-row">
+            <div class="video-row">
+                <div class="video" id="video1">
+                    <video width="100%" height="auto" controls autoplay loop muted>
+                        <source src="media/videos/deviate.mp4" type="video/mp4">
+                    </video>
+                    <p class="video-caption">Trajectory Deviate</p>
+                </div>
+                <div class="video" id="video2">
+                    <video width="100%" height="auto" controls autoplay loop muted>
+                        <source src="media/videos/drop.mp4" type="video/mp4">
+                    </video>
+                    <p class="video-caption">Gripper Drop</p>
+                </div>
+                <div class="video" id="video3">
+                    <video width="100%" height="auto" controls autoplay loop muted>
+                        <source src="media/videos/stuck.mp4" type="video/mp4">
+                    </video>
+                    <p class="video-caption">Robot Stuck</p>
+                </div>
+            </div>
+          </div>
+        
+      </div>
+    </div>
+    
+  </section>
+
+
+  <section class="section" id="BibTeX">
+    <div class="container is-max-widescreen content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@article{yuan2024general_flow,
+        title={General Flow as Foundation Affordance for Robot Manipulation Learning},
+        <!-- author={QwQ}, -->
+        <!-- journal={arXiv preprint arXiv:2307.05973}, -->
+        year={2024}
+      }</code></pre>
+    </div>
+  </section>
+
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column">
+          <div class="content has-text-centered">
+            <p>
+              Website template borrowed from <a href="https://github.com/voxposer/voxposer.github.io">VoxPoser</a>. 
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+</html>

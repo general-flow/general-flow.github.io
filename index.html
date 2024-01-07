@@ -479,7 +479,7 @@
           <h2 class="title is-3">Abstract</h2>
           <div class="content has-text-justified">
             <p>
-            We propose general flow as universal affordance for scalable robot manipulation learning in the real world. While previous representation is either embodiment/simulation-dependent or lack fine-grained geometric and semantic to provide details guidance, general flow provide foundation ability and property even to achieve zero-shot human-to-robot skill transfer. In this paper, we define general flow formally, and extract it from both real world 3D human datasets and original RGBD video. New algorithm is design to enhance scale-awareness for general flow prediction, and multiple key properties (e.g. robustness to label noise, common sense acquisition) emergent with training in scale. In addition, with a close-loop controller and a simple heuristic policy derived from general flow prediction, we adopt our methods on a Franka-Emika robot and achieved zero-shot skill transfer with 81\% success rate for all categories of object with totally 18 tasks. All of these shows great potentiality of general flow prediction as foundation affordance for robot learning in the future. We will release our tool, code and weight to benefit the subsequent research.
+            We define a general flow learning paradigm and build a large-scale language-conditioned flow prediction model directly from real world human dataset in the first time. While previous affordance is either embodiment/simulation-dependent or lack fine-grained geometric for low-level control, our framework provides cross-embodiment, small domain-gap, geometric-awareness and scalability simultaneously. In this paper, we first define general flow affordance formally, and then extract it from both real world 3D human datasets and original RGBD video. New algorithm is design to enhance scale-awareness for general flow prediction, and multiple key properties (e.g. robustness to label noise) emergent with training in scale. In addition, with only one model and a simple heuristic policy derived from close-loop flow prediction, we achieved zero-shot skill transfer with 81\% success rate for all categories of object with totally 18 tasks in 6 scenes. All of these shows great potentiality of general flow representation as foundation affordance for robot learning in the future.
             </p>
           </div>
         </div>
@@ -672,8 +672,6 @@
                   <option value="4">"group-4"</option>
                 </select>
               </div> of visualization. 
-              </br>
-              (thanks for your patience to wait for loading since the image size is large)
             </div>
           </div>
           <div>

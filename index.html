@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="description"
-          content="General Flow as Foundation Affordance for Robot Manipulation Learning">
-    <meta name="keywords" content="Affordance, Robotic Manipulation, Flow">
+          content="General Flow as Foundation Affordance for Scalable Manipulation Learning">
+    <meta name="keywords" content="Affordance, Robotic Manipulation, Flow, Scalability">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>General-Flow</title>
 
@@ -262,44 +262,57 @@
       <div class="container is-fullhd">
         <div class="columns is-centered">
           <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">General Flow as Foundation Affordance for Robot<br>Manipulation Learning</h1>
+            <h1 class="title is-1 publication-title">General Flow as Foundation Affordance for </br> Scalable Robot Learning</h1>
             <!-- <h3 class="title is-4 conference-authors"><a target="_blank" href="https://roboticsconference.org/">RSS2024 (Submitted)</a></h3> -->
-            <!-- <div class="is-size-5 publication-authors">
+            <div class="is-size-5 publication-authors">
               <span class="author-block">
-                <a target="_blank" href="https://www.google.com/">anonymous submmision</a><sup>1</sup>,
+                <a target="_blank" href="https://michaelyuancb.github.io/">Chengbo Yuan</a><sup>2,3,4,5</sup>,
               </span>
-            </div> -->
+              <span class="author-block">
+                <a target="_blank" href="https://alvinwen428.github.io/">Chuan Wen</a><sup>1,2,3</sup>,
+              </span>
+              <span class="author-block">
+                <a target="_blank" href="https://tongzhangthu.github.io/">Tong Zhang</a><sup>1,2,3</sup>,
+              </span>
+              <span class="author-block">
+                <a target="_blank" href="https://yang-gao.weebly.com/">Yang Gao</a><sup>1,2,3</sup>,
+              </span>
+            </div>
 
-            <!-- <div class="is-size-5 publication-authors">
-              <span class="author-block"><sup>1</sup>Tsinghua University,</span>
-            </div> -->
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>Institute for Interdisciplinary Information Sciences, Tsinghua University</span> </br>
+              <span class="author-block"><sup>2</sup>Shanghai Artificial Intelligence Laboratory,</span>
+              <span class="author-block"><sup>3</sup>Shanghai Qi Zhi Institute</span> </br>
+              <span class="author-block"><sup>4</sup>School of Computer Science, Wuhan University,</span>
+              <span class="author-block"><sup>5</sup>Hubei Luojia Laboratory</span>
+            </div>
 
             <!-- PDF Link. -->
             <div class="column has-text-centered">
               <div class="publication-links">
-                <!-- <span class="link-block">
-                  <a target="_blank" href="voxposer.pdf"
+                <span class="link-block">
+                  <a target="_blank" href="general_flow.pdf"
                     class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
                         <i class="fas fa-file-pdf"></i>
                     </span>
                     <span>Paper</span>
                   </a>
-                </span> -->
+                </span>
 
                 <!-- Arxiv Link. -->
-                <!-- <span class="link-block">
-                  <a target="_blank" href="https://arxiv.org/abs/2307.05973"
+                <span class="link-block">
+                  <a target="_blank" href="https://arxiv.org/"
                     class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
                         <i class="fas fa-file"></i>
                     </span>
-                    <span>ArXiv</span>
+                    <span>ArXiv (Coming Soon)</span>
                   </a>
-                </span> -->
+                </span>
 
                 <!-- Video Link. -->
-                <span class="link-block">
+                <!-- <span class="link-block">
                   <a target="_blank" href="www.google.com"
                     class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
@@ -307,7 +320,7 @@
                     </span>
                     <span>Video</span>
                   </a>
-                </span>
+                </span> -->
 
                 <!-- Code Link. -->
                 <span class="link-block">
@@ -467,7 +480,7 @@
   </section>
   <h2 class="subtitle has-text-centered">
   </br>
-    General Flow is a foundation affordace which satiesfies<br><i>refined, scene & embodiment-agnostic, semantic & geometric-rich, language-conditioned and scalable in the real world.</i> <br>With general flow as affordance, we achieve <b>zero-shot human-to-robot skill transfer</b> with 81% success rate on totally 18 tasks.  
+    General Flow is a Foundation Affordace which provides<br><b><i>scalability, universality, rich geometric guidance and small inference domain-gap.</i></b> <br>With general flow as affordance, we achieve <b>zero-shot human-to-robot skill transfer</b> with 81% success rate on totally 18 tasks.  
   </h2>
 
 
@@ -479,7 +492,11 @@
           <h2 class="title is-3">Abstract</h2>
           <div class="content has-text-justified">
             <p>
-            We define a general flow learning paradigm and build a large-scale language-conditioned flow prediction model directly from real world human dataset in the first time. While previous affordance is either embodiment/simulation-dependent or lack fine-grained geometric for low-level control, our framework provides cross-embodiment, small domain-gap, geometric-awareness and scalability simultaneously. In this paper, we first define general flow affordance formally, and then extract it from both real world 3D human datasets and original RGBD video. New algorithm is design to enhance scale-awareness for general flow prediction, and multiple key properties (e.g. robustness to label noise) emergent with training in scale. In addition, with only one model and a simple heuristic policy derived from close-loop flow prediction, we achieved zero-shot skill transfer with 81\% success rate for all categories of object with totally 18 tasks in 6 scenes. All of these shows great potentiality of general flow representation as foundation affordance for robot learning in the future.
+              We address the challenge of acquiring real-world manipulation skills with a scalable framework. 
+              Inspired by the success of large-scale auto-regressive prediction in Large Language Models (LLMs), we hold the belief that identifying an appropriate prediction target capable of leveraging large-scale datasets is crucial for achieving efficient and universal learning.
+              Therefore, we propose to utilize flow, which represents the future trajectories of 3D points on objects of interest, as an ideal prediction target in robot learning. To exploit scalable data resources, we turn our attention to cross-embodiment datasets. We develop, for the first time, a language-conditioned prediction model directly from large-scale RGBD human video datasets. Our predicted flow offers actionable geometric and physics guidance, thus facilitating stable zero-shot skill transfer in real-world scenarios.
+              We deploy our method with a policy based on closed-loop flow prediction. Remarkably, without any additional training, our method achieves an impressive 81\% success rate in human-to-robot skill transfer, covering 18 tasks in 6 scenes. Our framework features the following benefits: (1) scalability: leveraging cross-embodiment data resources; (2) universality: multiple object categories, including rigid, articulated, and soft bodies;
+              (3) stable skill transfer: providing actionable guidance with a small inference domain-gap. These lead to a new pathway towards scalable general robot learning. Data, code, and model weights will be made publicly available.  
             </p>
           </div>
         </div>
@@ -524,7 +541,7 @@
           </br>
           </br>
             <p class="content has-text-justified">
-              We extend previous work to propose general flow as foundation affordance. Property and downstream application are analysis to reveal its foundational status. We extract general flow label directly from human RGBD video datasets and design new algorithm for general flow prediction. Zero-shot cross-embodiment skill transfer is achieved in the real world. All of these show the great power and potentiality of general flow  affordance.
+              We propose General Flow as a Foundation Affordance. Its properties and applications are analyzed to reveal its great power. We design a scale-aware algorithm for general flow prediction and achieve stable zero-shot cross-embodiment skill transfer in the real world. These findings highlight the transformative potential of general flow in spearheading scalable general robot learning.
             </p>
             
           </br>
@@ -554,9 +571,9 @@
                 <option value="Laptop">"Laptop"</option>
                 <option value="Drawer">"Drawer (Storage Furniture)"</option>
                 <option value="Clothes">"Clothes"</option>
-                <option value="GoldSafe">"Safe (Gold)"</option>
+                <option value="GoldSafe">"Safe"</option>
                 <option value="Mug">"Mug"</option>
-                <option value="BrownSafe">"Safe (Brown)"</option>
+                <option value="BrownSafe">"Box"</option>
                 </select>
               </div>  
               with "
@@ -627,9 +644,9 @@
                 <option value="Laptop">"Laptop"</option>
                 <option value="Drawer">"Drawer (Storage Furniture)"</option>
                 <option value="Clothes">"Clothes"</option>
-                <option value="GoldSafe">"Safe (Gold)"</option>
+                <option value="GoldSafe">"Safe"</option>
                 <option value="Mug">"Mug"</option>
-                <option value="BrownSafe">"Safe (Brown)"</option>
+                <option value="BrownSafe">"Box"</option>
                 </select>
               </div>  
               with "
@@ -656,7 +673,7 @@
           </br>
           </br>
 
-          <h2 class="title is-3">More Visualization from Human Video</h2>
+          <h2 class="title is-3">More Visualization from Human Videos</h2>
 
           <h3 class="subtitle has-text-centered">
             We provide more visualiaztion of prediction on human videos. 25 or 50 trajectories are selected for clearity.
@@ -684,16 +701,16 @@
 
           <h2 class="title is-3">Emergent Properties of General Flow</h2>
           <h3 class="subtitle has-text-centered">
-            With general flow prediction task <b>trained in scale</b>, our model acquire multiple emergent properties, which is impossible for small-scale imitation learning setting. 
+            When trained on the general flow prediction task at scale, our model acquires multiple emergent properties that are unfeasible in a small-scale imitation learning setting.
             </br>
             </br>
             <div class="list-container">
               <ul>
-                  <li><b>Semantic Rich & Controllable [(a)(b)]:</b> semantic of flow could be changed easily by switching language instruction. </li>
+                  <li><b>Semantic Richness & Controllability [(a)(b)]:</b> The semantics of the flow can be easily altered by switching language instructions, showcasing the model's flexibility. </li>
                   </br>
-                  <li><b>Robust to the Label Noise [(c)(d)]:</b> even with severe noise in label (significant deviation in 'open Safe' and almost static in 'pickup Toy Car'), our model could predict right trend. (red indicates label and green indicates prediction in the figure.)</li> 
+                  <li><b>Robustness to Label Noise [(c)(d)]:</b> Despite severe noise in labels, such as significant deviation in 'open Safe' or almost static labels in 'pickup Toy Car', our model consistently predicts the correct trend. In the figure, red indicates the label and green represents the prediction.</li> 
                   </br>
-                  <li><b>Spatial Commonsense Acquisition [(e)(f)]:</b> the model adjust its prediction scale to fit for object spatial relationship (both end on the table, and larger scale for longer distance). </li>
+                  <li><b>Spatial Commonsense Acquisition [(e)(f)]:</b> For instance, in task 'putdown Mug', the model adjusts its prediction scale to accurately reflect the spatial relationships of objects, ensuring both ends are on the table and adapting to longer distances with a larger scale.</li>
               </ul>
             </div>
           </h3>
